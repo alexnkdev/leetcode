@@ -1,0 +1,31 @@
+class Solution {
+    public List<Integer> zigzagTraversal(int[][] grid) {
+        List<Integer> ret = new ArrayList<>();
+        int i = 0;
+        int j = 0;
+        boolean right = true;
+        int step = 0;
+        while (i < grid.length && j < grid[0].length) {
+            if (step % 2 == 0) {
+                ret.add(grid[i][j]);
+            }
+            step++;
+            if (right) {
+                j++;
+                if (j == grid[0].length) {
+                    right = false;
+                    j = grid[0].length - 1;
+                    i++;
+                }
+            } else {
+                j--;
+                if (j < 0) {
+                    right = true;
+                    j = 0;
+                    i++;
+                }
+            }
+        }
+        return ret;
+    }
+}
