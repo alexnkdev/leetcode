@@ -1,5 +1,7 @@
 object Solution {
-    def findLUSlength(a: String, b: String): Int = {
-        if a == b then -1 else math.max(a.length(), b.length())
+  def findLUSLength(a: String, b: String): Int =
+    (a, b) match {
+      case (x, y) if x == y => -1
+      case _ => math.max(a.length, b.length)
     }
 }
