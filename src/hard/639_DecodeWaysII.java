@@ -59,7 +59,6 @@ class Solution {
     List<String> ret = new ArrayList<>();
     if (ch == '*') {
       List<String> sub = gen_all(k + 1, pattern);
-      System.out.println("ssub: " + sub);
       for (int kk = 1; kk <= 9; kk++) {
         for (String s : sub) {
           ret.add(Integer.toString(kk) + s);
