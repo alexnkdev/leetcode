@@ -1,42 +1,37 @@
 class Solution {
   public int bestDigitSumPair(int[] nums) {
-    Map<Integer, Set<Integer>> digitSumsToNum = new HashMap<>();
+    Map<Integer, List<Integer>> sumToIndex = new HashMap<>();
     for (int i = 0; i < nums.length; i++) {
       int sum = digitSum(nums[i]);
-      Set<Integer> cur = digitSumsToNum.getOrDefault(sum, new TreeSet<>(
-            new Comparator<Integer>() {
-              public int compare(Integer firstIndex, Integer secondIndex) {
-                if (nums[firstIndex] < nums[secondIndex]) {
-                  return 1;
-                }
-                if (nums[firstIndex] > nums[secondIndex]) {
-                  return -1;
-                }
-                return -Integer.compare(firstIndex, secondIndex);
-              }
-            }
-            ));
-      cur.add(i);
-      digitSumsToNum.put(sum, cur);
+      List<Integer> idxs = sumToIndex.get(sum);
+      if (idxs == null) {
+        idxs = new ArrayList<>();
+      }
+      idxs.add(i);
+      sumToIndex.put(sum, idxs);
     }
-
+    for (Integer sum : sumToIndex.keySet()) {
+      List<Integer> idxs = sumToIndex.get(sum);
+      Collections.sort(idxs, (val1, val2) -> {
+        return -Integer.compare(nums[val1], nums[val2]);
+      });
+      sumToIndex.put(sum, idxs);
+    }
     Integer max = null;
-    for (Integer sum : digitSumsToNum.keySet()) {
-      if (digitSumsToNum.get(sum).size() < 2) {
-        continue;
-      }
-      if (max == null || sum > max) {
-        max = sum;
+   // System.out.println(sumToIndex);
+    for (Integer sum : sumToIndex.keySet()) {
+      List<Integer> idxs = sumToIndex.get(sum);
+      if (idxs.size() > 1) {
+        Iterator<Integer> it = idxs.iterator();
+        int first = nums[it.next()];
+        int second = nums[it.next()];
+        int sumVal = first + second;
+        if (max == null || max < sumVal) {
+          max = sumVal;
+        }
       }
     }
-
-    if (max != null && digitSumsToNum.get(max).size() > 1) {
-      Iterator<Integer> iter = digitSumsToNum.get(max).iterator();
-      return nums[iter.next()] + nums[iter.next()];
-    } else {
-        return -1;
-    }
-
+    return max == null ? -1: max;
   }
 
   int digitSum(int x) {

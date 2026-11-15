@@ -1,21 +1,36 @@
 class Solution {
   public int minGroupsWithinLimit(int[] values, int limit) {
     int n = values.length;
-    int[][] possible = new int[n + 1][1 << n];
-
-    possible[0][0] = true;
-
-    for (int i = 1; i <= n; i++) {
-      for (int used_set = 0; used_set < (1 << n); used_set++) {
-
-        for (int take_set = ; j < n; j++) {
-          
+    int MAX = 1 << n;
+    Integer[] d = new Integer[MAX];
+    d[0] = 0;
+   
+    long[] sums = new long[MAX];
+    for (int set = 0; set < MAX; set++) {
+      sums[set] = 0;
+      for (int k = 0; k < n; k++) {
+        if ((set & (1 << k)) > 0) {
+          sums[set] += values[k];
         }
-
       }
     }
 
+    for (int set = 1; set < MAX; set++) {
 
-    return possible[n][(1 << n) - 1];
+      for (int subset = set; subset > 0; subset = (subset - 1) & set) {
+        
+        long sum = sums[subset];
+
+        if (sum <= limit) {
+          int restSet = set & (~subset);
+          if (d[restSet] != null) {
+            d[set] = d[set] == null ? (d[restSet] + 1) : Math.min(d[set], d[restSet] + 1);
+            
+          }
+        }
+      }
+    }
+
+    return d[MAX - 1];
   }
 }
