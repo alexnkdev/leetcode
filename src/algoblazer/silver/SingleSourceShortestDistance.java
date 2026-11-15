@@ -1,13 +1,12 @@
+
 class Solution {
 
   public int[] shortestDistances(int n, int[][] edges) {
     
-    Map<Integer, Set<Integer>> adj = new HashMap<>();
-
-    Integer[][] cost = new Integer[n][n];
+    Map<Integer, List<Edge>> adj = new HashMap<>();
 
     for (int i = 0; i < n; i++) {
-      adj.put(i, new HashSet<>());
+      adj.put(i, new ArrayList<>());
     }
 
     for (int i = 0; i < edges.length; i++) {
@@ -15,12 +14,20 @@ class Solution {
       int b = edges[i][1] - 1;
       int c = edges[i][2];
       
-      Set<Integer> aAdj = adj.getOrDefault(a, new HashSet<>());
-      aAdj.add(b);
-
+      List<Edge> aAdj = adj.getOrDefault(a, new ArrayList<>());
       adj.put(a, aAdj);
 
-      cost[a][b] = cost[a][b] == null ? c : Math.min(cost[a][b], c);
+      boolean found = false;
+      for (Edge existing : aAdj) {
+        if (existing.u == b) {
+            existing.w = Math.min(existing.w, c);
+            found = true;
+        }
+      }
+
+      if (!found) {
+        aAdj.add(new Edge(b, c));
+      }
 
     }
 
@@ -39,11 +46,12 @@ class Solution {
     while (!pq.isEmpty()) {
       Integer currentVertex = pq.poll();
       visited[currentVertex] = true;
-      for (Integer other : adj.get(currentVertex)) {
+      for (Edge edge : adj.get(currentVertex)) {
+        int other = edge.u;
         if (!visited[other]) {
 
-          if (d[other] == null || d[other] > d[currentVertex] + cost[currentVertex][other]) {
-            d[other] = d[currentVertex] + cost[currentVertex][other];
+          if (d[other] == null || d[other] > d[currentVertex] + edge.w) {
+            d[other] = d[currentVertex] + edge.w;
             pq.remove(other);
             pq.add(other);
           }
@@ -57,6 +65,15 @@ class Solution {
     }
 
     return ret;
+  }
+
+  class Edge {
+    int u;
+    int w;
+    public Edge(int u, int w) {
+        this.u = u;
+        this.w = w;
+    }
   }
 
 }
